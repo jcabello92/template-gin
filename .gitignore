@@ -1,3 +1,15 @@
-﻿.env
+.env
 
 .DS_Store
+
+# Air (Live reload)
+tmp/
+
+# Binarios y compilados
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+app
+server

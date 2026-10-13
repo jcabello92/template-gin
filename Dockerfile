@@ -11,11 +11,11 @@ CMD ["sh", "-c", "if [ -f go.mod ]; then air; else echo 'Proyecto no inicializad
 # --- FASE 3: CONSTRUCCIÓN (build) ---
 FROM base AS build
 COPY ./volume/app/src .
-RUN echo 'package main; import "fmt"; import "time"; func main() { fmt.Println("Plantilla Go"); time.Sleep(86400 * time.Second) }' > dummy.go && go build -o /app/server dummy.go
-RUN if [ -f go.mod ]; then go mod download && go build -o /app/server .; fi
+RUN echo 'package main; import "fmt"; import "time"; func main() { fmt.Println("Plantilla Go"); time.Sleep(86400 * time.Second) }' > dummy.go && CGO_ENABLED=0 go build -ldflags="-s -w" -o /app/app dummy.go
+RUN if [ -f go.mod ]; then go mod download && CGO_ENABLED=0 go build -ldflags="-s -w" -o /app/app .; fi
 
 # --- FASE 4: PRODUCCIÓN (prod) ---
 FROM alpine:latest AS prod
 WORKDIR /app
-COPY --from=build /app/server ./server
-CMD ["./server"]
+COPY --from=build /app/app ./app
+CMD ["./app"]
